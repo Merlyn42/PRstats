@@ -43,8 +43,8 @@ public class WeaponFactory {
 	}
 
 	private void includeFile(Weapon weapon, File f, String[] args) {
-		//System.out.println("Including File: " + f.getName());
-		BufferedReader reader=null;
+		// System.out.println("Including File: " + f.getName());
+		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(f));
 		} catch (FileNotFoundException e1) {
@@ -59,16 +59,15 @@ public class WeaponFactory {
 				line = reader.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
-				return;
-			}finally{
-				if(reader!=null){
+				if (reader != null) {
 					try {
 						reader.close();
-					} catch (IOException e) {
+					} catch (IOException e1) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						e1.printStackTrace();
 					}
 				}
+				return;
 			}
 			if (line == null) {
 				break;
@@ -130,7 +129,14 @@ public class WeaponFactory {
 				}
 			}
 		}
-
+		if (reader != null) {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private Object safeArrayAccess(Object[] objects, int i) {
@@ -200,9 +206,11 @@ public class WeaponFactory {
 			}
 
 			else if (line.contains(projectileTemplate)) {
-				Ammunition ammo = ammos.get(line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length()));
-				if(ammo==null){
-					System.err.println("Unable to find ammunition: "+line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length()));
+				Ammunition ammo = ammos.get(line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(),
+						line.length()));
+				if (ammo == null) {
+					System.err.println("Unable to find ammunition: "
+							+ line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length()));
 				}
 				weapon.ammo = ammo;
 			}
