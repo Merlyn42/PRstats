@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 public class WeaponFactory {
 	static String					magSize				= "ObjectTemplate.ammo.magSize ";
@@ -101,12 +102,21 @@ public class WeaponFactory {
 							line = line.replace("v_arg" + i, "\"" + safeArrayAccess(args, i - 1) + "\"");
 						}
 					}
-					//System.out.println("Include line: " + line);
+					// System.out.println("Include line: " + line);
 					int startingIndex = line.indexOf("include") + "include".length();
 					int endingIndex = line.indexOf("\"");
-					endingIndex=endingIndex<0?line.length():endingIndex;
-					String fileName = line.substring(startingIndex,endingIndex ).trim();
+					endingIndex = endingIndex < 0 ? line.length() : endingIndex;
+					String fileName = line.substring(startingIndex, endingIndex).trim();
+					
 					ArrayList<String> newArgs = new ArrayList<String>();
+					String arguments = line.substring(endingIndex).trim();
+					StringTokenizer st = new StringTokenizer(arguments);
+					while(st.hasMoreTokens()){
+						newArgs.add(st.nextToken().replace("\"", ""));
+					}
+					
+					
+					/*
 
 					Boolean inside = false;
 					StringBuilder currentArg = new StringBuilder();
@@ -118,9 +128,10 @@ public class WeaponFactory {
 							currentArg = new StringBuilder();
 							inside = !inside;
 						} else {
-							if(line.charAt(i)!='\"')currentArg.append(line.charAt(i));
+							if (line.charAt(i) != '\"')
+								currentArg.append(line.charAt(i));
 						}
-					}
+					}*/
 					String[] newArgsArray = new String[newArgs.size()];
 					File includeFile = new File(f.getParentFile(), fileName);
 					includeFile(weapon, includeFile, newArgs.toArray(newArgsArray));
