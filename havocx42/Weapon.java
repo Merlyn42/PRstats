@@ -1,3 +1,4 @@
+package havocx42;
 
 public class Weapon {
 	String name;
