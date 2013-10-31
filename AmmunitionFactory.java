@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Map;
+import java.util.logging.Logger;
 
 
 public class AmmunitionFactory {
@@ -9,13 +10,17 @@ public class AmmunitionFactory {
 	static String maxDist = "ObjectTemplate.DistToMinDamage ";
 	static String gravityModifier = "ObjectTemplate.gravityModifier ";
 	
+	private final static Logger LOGGER = Logger.getLogger(AmmunitionFactory.class.getName());
 	
 	 static Ammunition createAmmunition(File f,Map<String, Ammunition> ammo){
 		 String name =f.getName().substring(0, f.getName().indexOf('.'));
 		 
 		 Ammunition result = ammo.get(name);
 		 if(result==null){
-				result= new Ammunition();
+			 result= new Ammunition();
+			 LOGGER.finer("Creating ammunition: "+name);
+		 }else{
+			 LOGGER.finer("Updating ammunition: "+name);
 		 }
 		 BufferedReader reader;
 		try {

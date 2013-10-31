@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 public class WeaponFactory {
 	static String					magSize				= "ObjectTemplate.ammo.magSize ";
@@ -26,6 +27,7 @@ public class WeaponFactory {
 	static String					roundsPerMinute		= "ObjectTemplate.fire.roundsPerMinute ";
 
 	private Map<String, Ammunition>	ammos;
+	private final static Logger LOGGER = Logger.getLogger(WeaponFactory.class.getName());
 
 	public WeaponFactory(Map<String, Ammunition> ammo) {
 		ammos = ammo;
@@ -33,10 +35,14 @@ public class WeaponFactory {
 
 	public Weapon createWeaponFromFile(File f,Map<String, Weapon> weapons) {
 		String weaponName = f.getName().substring(0, f.getName().indexOf('.'));
+		
 		Weapon result=null;
 		result=weapons.get(weaponName);
 		if(result==null){
 			result = new Weapon();
+			LOGGER.finer("Creating weapon: "+weaponName);
+		}else{
+			LOGGER.finer("Updating weapon: "+weaponName);
 		}
 		Deviation dev = new Deviation();
 		result.dev = dev;
@@ -49,12 +55,13 @@ public class WeaponFactory {
 	}
 
 	private void includeFile(Weapon weapon, File f, String[] args) {
+		LOGGER.finer("Including file: "+f.getName());
 		// System.out.println("Including File: " + f.getName());
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(f));
 		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+			LOGGER.fine("Unable to include file: "+e1.getMessage() + " for Weapon:"+weapon.name);
 			return;
 		}
 		Boolean executing = true;
@@ -223,10 +230,10 @@ public class WeaponFactory {
 
 			else if (line.contains(projectileTemplate)) {
 				Ammunition ammo = ammos.get(line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(),
-						line.length()));
+						line.length()).toLowerCase());
 				if (ammo == null) {
-					System.err.println("Unable to find ammunition: "
-							+ line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length()));
+					LOGGER.fine("Unable to find ammunition: "
+							+ line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length()).toLowerCase()+" for weapon:"+weapon.name);
 				}
 				weapon.ammo = ammo;
 			}
