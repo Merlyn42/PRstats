@@ -31,11 +31,16 @@ public class WeaponFactory {
 		ammos = ammo;
 	}
 
-	public Weapon createWeaponFromFile(File f) {
-		Weapon result = new Weapon();
+	public Weapon createWeaponFromFile(File f,Map<String, Weapon> weapons) {
+		String weaponName = f.getName().substring(0, f.getName().indexOf('.'));
+		Weapon result=null;
+		result=weapons.get(weaponName);
+		if(result==null){
+			result = new Weapon();
+		}
 		Deviation dev = new Deviation();
 		result.dev = dev;
-		result.name = f.getName().substring(0, f.getName().indexOf('.'));
+		result.name = weaponName; 
 
 		includeFile(result, f, new String[0]);
 
