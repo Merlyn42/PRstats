@@ -97,6 +97,7 @@ public class Program {
 		// write the excel sheet
 		try {
 			excel.writeWorkbook(output);
+			LOGGER.info("Your excel file has been written!");
 		} catch (IOException e) {
 			System.err.println("Unable to save stats: "+e.getMessage());
 			LOGGER.log(Level.SEVERE,"Unable to save stats" , e);
