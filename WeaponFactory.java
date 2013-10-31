@@ -10,43 +10,44 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 public class WeaponFactory {
-	static String					magSize				= "ObjectTemplate.ammo.magSize ";
-	static String					reloadTime			= "ObjectTemplate.ammo.reloadTime ";
-	static String					recoilForceUp		= "ObjectTemplate.recoil.recoilForceUp CRD_UNIFORM/";
-	static String					minDev				= "ObjectTemplate.deviation.minDev ";
-	static String					setFireDev			= "ObjectTemplate.deviation.setFireDev ";
-	static String					setTurnDev			= "ObjectTemplate.deviation.setTurnDev ";
-	static String					setSpeedDev			= "ObjectTemplate.deviation.setSpeedDev ";
-	static String					setMiscDev			= "ObjectTemplate.deviation.setMiscDev ";
-	static String					devModStand			= "ObjectTemplate.deviation.devModStand ";
-	static String					devModCrouch		= "ObjectTemplate.deviation.devModCrouch ";
-	static String					devModLie			= "ObjectTemplate.deviation.devModLie ";
-	static String					devModZoom			= "ObjectTemplate.deviation.devModZoom ";
-	static String					projectileTemplate	= "ObjectTemplate.projectileTemplate ";
-	static String					velocity			= "ObjectTemplate.velocity ";
-	static String					roundsPerMinute		= "ObjectTemplate.fire.roundsPerMinute ";
+	static String					magSize					= "ObjectTemplate.ammo.magSize ";
+	static String					reloadTime				= "ObjectTemplate.ammo.reloadTime ";
+	static String					recoilForceUp			= "ObjectTemplate.recoil.recoilForceUp CRD_UNIFORM/";
+	static String					recoilForceLeftRight	= "ObjectTemplate.recoil.recoilForceLeftRight CRD_UNIFORM/";
+	static String					minDev					= "ObjectTemplate.deviation.minDev ";
+	static String					setFireDev				= "ObjectTemplate.deviation.setFireDev ";
+	static String					setTurnDev				= "ObjectTemplate.deviation.setTurnDev ";
+	static String					setSpeedDev				= "ObjectTemplate.deviation.setSpeedDev ";
+	static String					setMiscDev				= "ObjectTemplate.deviation.setMiscDev ";
+	static String					devModStand				= "ObjectTemplate.deviation.devModStand ";
+	static String					devModCrouch			= "ObjectTemplate.deviation.devModCrouch ";
+	static String					devModLie				= "ObjectTemplate.deviation.devModLie ";
+	static String					devModZoom				= "ObjectTemplate.deviation.devModZoom ";
+	static String					projectileTemplate		= "ObjectTemplate.projectileTemplate ";
+	static String					velocity				= "ObjectTemplate.velocity ";
+	static String					roundsPerMinute			= "ObjectTemplate.fire.roundsPerMinute ";
 
 	private Map<String, Ammunition>	ammos;
-	private final static Logger LOGGER = Logger.getLogger(WeaponFactory.class.getName());
+	private final static Logger		LOGGER					= Logger.getLogger(WeaponFactory.class.getName());
 
 	public WeaponFactory(Map<String, Ammunition> ammo) {
 		ammos = ammo;
 	}
 
-	public Weapon createWeaponFromFile(File f,Map<String, Weapon> weapons) {
+	public Weapon createWeaponFromFile(File f, Map<String, Weapon> weapons) {
 		String weaponName = f.getName().substring(0, f.getName().indexOf('.'));
-		
-		Weapon result=null;
-		result=weapons.get(weaponName);
-		if(result==null){
+
+		Weapon result = null;
+		result = weapons.get(weaponName);
+		if (result == null) {
 			result = new Weapon();
-			LOGGER.finer("Creating weapon: "+weaponName);
-		}else{
-			LOGGER.finer("Updating weapon: "+weaponName);
+			LOGGER.finer("Creating weapon: " + weaponName);
+		} else {
+			LOGGER.finer("Updating weapon: " + weaponName);
 		}
 		Deviation dev = new Deviation();
 		result.dev = dev;
-		result.name = weaponName; 
+		result.name = weaponName;
 
 		includeFile(result, f, new String[0]);
 
@@ -55,13 +56,13 @@ public class WeaponFactory {
 	}
 
 	private void includeFile(Weapon weapon, File f, String[] args) {
-		LOGGER.finer("Including file: "+f.getName());
+		LOGGER.finer("Including file: " + f.getName());
 		// System.out.println("Including File: " + f.getName());
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(f));
 		} catch (FileNotFoundException e1) {
-			LOGGER.fine("Unable to include file: "+e1.getMessage() + " for Weapon:"+weapon.name);
+			LOGGER.fine("Unable to include file: " + e1.getMessage() + " for Weapon:" + weapon.name);
 			return;
 		}
 		Boolean executing = true;
@@ -119,31 +120,24 @@ public class WeaponFactory {
 					int endingIndex = line.indexOf("\"");
 					endingIndex = endingIndex < 0 ? line.length() : endingIndex;
 					String fileName = line.substring(startingIndex, endingIndex).trim();
-					
+
 					ArrayList<String> newArgs = new ArrayList<String>();
 					String arguments = line.substring(endingIndex).trim();
 					StringTokenizer st = new StringTokenizer(arguments);
-					while(st.hasMoreTokens()){
+					while (st.hasMoreTokens()) {
 						newArgs.add(st.nextToken().replace("\"", ""));
 					}
-					
-					
-					/*
 
-					Boolean inside = false;
-					StringBuilder currentArg = new StringBuilder();
-					for (int i = line.indexOf(" "); i < line.length(); i++) {
-						if (line.charAt(i) == (' ')) {
-							if (inside) {
-								newArgs.add(currentArg.toString());
-							}
-							currentArg = new StringBuilder();
-							inside = !inside;
-						} else {
-							if (line.charAt(i) != '\"')
-								currentArg.append(line.charAt(i));
-						}
-					}*/
+					/*
+					 * 
+					 * Boolean inside = false; StringBuilder currentArg = new
+					 * StringBuilder(); for (int i = line.indexOf(" "); i <
+					 * line.length(); i++) { if (line.charAt(i) == (' ')) { if
+					 * (inside) { newArgs.add(currentArg.toString()); }
+					 * currentArg = new StringBuilder(); inside = !inside; }
+					 * else { if (line.charAt(i) != '\"')
+					 * currentArg.append(line.charAt(i)); } }
+					 */
 					String[] newArgsArray = new String[newArgs.size()];
 					File includeFile = new File(f.getParentFile(), fileName);
 					includeFile(weapon, includeFile, newArgs.toArray(newArgsArray));
@@ -180,6 +174,9 @@ public class WeaponFactory {
 
 			} else if (line.contains(recoilForceUp)) {
 				weapon.recoilForceUp = line.substring(line.lastIndexOf(recoilForceUp) + recoilForceUp.length(), line.length());
+				
+			} else if (line.contains(recoilForceLeftRight)) {
+				weapon.recoilForceLeftRight = line.substring(line.lastIndexOf(recoilForceLeftRight) + recoilForceLeftRight.length(), line.length());
 
 			} else if (line.contains(velocity)) {
 				weapon.velocity = Double.valueOf(line.substring(line.lastIndexOf(velocity) + velocity.length(), line.length()));
@@ -233,7 +230,8 @@ public class WeaponFactory {
 						line.length()).toLowerCase());
 				if (ammo == null) {
 					LOGGER.fine("Unable to find ammunition: "
-							+ line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length()).toLowerCase()+" for weapon:"+weapon.name);
+							+ line.substring(line.lastIndexOf(projectileTemplate) + projectileTemplate.length(), line.length())
+									.toLowerCase() + " for weapon:" + weapon.name);
 				}
 				weapon.ammo = ammo;
 			}

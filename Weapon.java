@@ -5,6 +5,7 @@ public class Weapon {
 	public Double reloadTime;
 	public Double roundsPerMinute;
 	public String recoilForceUp;
+	public String recoilForceLeftRight;
 	double velocity;
 	Ammunition ammo;
 	Deviation dev;
@@ -28,7 +29,7 @@ public class Weapon {
 		try{
 		return "Weapon [name=" + name + ", magSize=" + magSize
 				+ ", reloadTime=" + reloadTime + ", recoilForceUp="
-				+ recoilForceUp + ", ammo=" + ammo.toString() + ", dev=" + dev.toString() + "]";
+				+ recoilForceUp + ", recoilForceLeftRight=" + recoilForceLeftRight + ", ammo=" + ammo.toString() + ", dev=" + dev.toString() + "]";
 		}catch( NullPointerException e){
 			return "Weapon name="+ name +" does not have all attributes";
 		}

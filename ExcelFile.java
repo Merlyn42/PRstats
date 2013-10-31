@@ -71,6 +71,11 @@ public class ExcelFile {
 			}else{
 				cellNumber++;
 			}
+			if (w.recoilForceLeftRight != null){
+				row.createCell(cellNumber++).setCellValue(w.recoilForceLeftRight);
+			}else{
+				cellNumber++;
+			}
 			row.createCell(cellNumber++).setCellValue(w.velocity);
 			if (w.roundsPerMinute != null){
 				row.createCell(cellNumber++).setCellValue(w.roundsPerMinute == null ? "null" : w.roundsPerMinute.toString());
@@ -129,6 +134,8 @@ public class ExcelFile {
 		sheet.setColumnWidth(cellNumber++, "reloadTime".length() * 280);
 		rowhead.createCell(cellNumber).setCellValue("recoilForceUp");
 		sheet.setColumnWidth(cellNumber++, "recoilForceUp".length() * 280);
+		rowhead.createCell(cellNumber).setCellValue("recoilForceLeftRight");
+		sheet.setColumnWidth(cellNumber++, "recoilForceLeftRight".length() * 280);
 		rowhead.createCell(cellNumber).setCellValue("Velocity");
 		sheet.setColumnWidth(cellNumber++, "Velocity".length() * 280);
 		rowhead.createCell(cellNumber).setCellValue("Rounds Per Minute");
