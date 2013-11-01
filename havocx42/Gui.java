@@ -1,33 +1,18 @@
 package havocx42;
 
-import java.awt.EventQueue;
 import java.awt.Toolkit;
-
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-
 import java.awt.BorderLayout;
-
 import javax.swing.JButton;
-
-import java.awt.FlowLayout;
-
-import javax.swing.JSplitPane;
 import javax.swing.JPanel;
-
-import java.awt.Component;
-
-import javax.swing.Box;
 import javax.swing.JFileChooser;
-import javax.swing.SwingConstants;
 import javax.swing.JLabel;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.BoxLayout;
 
 public class Gui implements ActionListener {
@@ -41,9 +26,9 @@ public class Gui implements ActionListener {
 	/**
 	 * Create the application.
 	 */
-	public Gui(String sourcePath_in,String targetPath_in) {
-		sourcePath=sourcePath_in;
-		targetPath=targetPath_in;
+	public Gui(String sourcePath_in, String targetPath_in) {
+		sourcePath = sourcePath_in;
+		targetPath = targetPath_in;
 		initialize();
 		frame.setVisible(true);
 	}
@@ -107,9 +92,9 @@ public class Gui implements ActionListener {
 			final JFileChooser fc = new JFileChooser();
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			File sourceFile;
-			if(sourcePath!=null){
+			if (sourcePath != null) {
 				sourceFile = new File(sourcePath);
-			}else{
+			} else {
 				sourceFile = new File("");
 			}
 			fc.setSelectedFile(sourceFile);
@@ -127,16 +112,16 @@ public class Gui implements ActionListener {
 		if ("target".equals(e.getActionCommand())) {
 			final JFileChooser fc = new JFileChooser();
 			File targetFile;
-			if(targetPath!=null){
+			if (targetPath != null) {
 				targetFile = new File(targetPath);
-			}else{
+			} else {
 				targetFile = new File("");
 			}
-			if(!targetFile.isFile()){
-				targetFile=new File(targetFile,"PRStats.xls");
+			if (!targetFile.isFile()) {
+				targetFile = new File(targetFile, "PRStats.xls");
 			}
 			fc.setSelectedFile(targetFile);
-			
+
 			int returnVal = fc.showOpenDialog(frame);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File f = fc.getSelectedFile();
@@ -154,7 +139,7 @@ public class Gui implements ActionListener {
 			}
 			File target = new File(targetPath);
 			try {
-				if(!target.canWrite()&&!target.createNewFile()){
+				if (!target.canWrite() && !target.createNewFile()) {
 					System.err.println("Can't write to target");
 					return;
 				}
@@ -164,8 +149,8 @@ public class Gui implements ActionListener {
 			}
 			Controller controller = new Controller();
 			controller.run(source, target);
-			WindowEvent winClosingEvent = new WindowEvent( frame, WindowEvent.WINDOW_CLOSING );
-			Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent( winClosingEvent );
+			WindowEvent winClosingEvent = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+			Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClosingEvent);
 		}
 
 	}
