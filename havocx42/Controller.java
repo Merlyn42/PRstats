@@ -15,6 +15,8 @@ public class Controller {
 	private final static Logger LOGGER = Logger.getLogger(Controller.class.getName());
 	
 	public void run(File dataFolder,File output){
+		LOGGER.info("source: " + dataFolder.getAbsolutePath());
+		LOGGER.info("target: " + output.getAbsolutePath());
 
 		// categorize
 		ArrayList<File> ammoFiles = new ArrayList<File>();

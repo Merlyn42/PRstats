@@ -1,4 +1,5 @@
 package havocx42;
+import java.awt.EventQueue;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
@@ -38,7 +39,7 @@ public class Program {
 	 */
 	
 	private final static Logger LOGGER = Logger.getLogger(Program.class.getName());
-	public final static String VERSION = "v0.9";
+	public final static String VERSION = "v1.0";
 	
 	private static void initRootLogger() throws SecurityException, IOException {
 
@@ -68,7 +69,7 @@ public class Program {
 		// get location
 		
 		Options options = new Options();
-		options.addOption("nogui", false, "run as a command line tool");
+		options.addOption("nogui", false, "run as a command line tool, must also supply -target and -source arguments");
 		options.addOption("source",true, "source directory where the PR weapons folder has been extracted");
 		options.addOption("target",true, "target file to write to");
 		options.addOption("version",false, "print the version information and exit");
@@ -76,32 +77,41 @@ public class Program {
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd= parser.parse(options, args);
 		
+		if(cmd.hasOption("version")){
+			System.out.println("PRStats "+VERSION);
+			System.out.println("Written by havocx42");
+			return;
+		}
+		
 		if((cmd.hasOption("nogui")&&(!cmd.hasOption("source")||!cmd.hasOption("target")))||cmd.hasOption("help")){
 				HelpFormatter formatter = new HelpFormatter();
 				formatter.printHelp( "PRStats", options );
 				return;
 		}
 		
-		if(cmd.hasOption("version")){
-			System.out.println("PRStats "+VERSION);
-			System.out.println("Written by havocx42");
-		}
+		final String target;
+		final String source;
 		
-		String target = "";
-		String source = "";
+		source=cmd.getOptionValue("source");
 		
-		if(cmd.hasOption("source")){
-			source=cmd.getOptionValue("source");
-		}
-		if(cmd.hasOption("target")){
-			target=cmd.getOptionValue("target");
+		target=cmd.getOptionValue("target");
+		
+		
+		if(!cmd.hasOption("nogui")){
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						Gui window = new Gui(source,target);	
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			return;
 		}
 		
 		File targetFile = new File(target);
 		File sourceFile = new File(source);
-		LOGGER.info("source: " + sourceFile.getAbsolutePath());
-		LOGGER.info("target: " + targetFile.getAbsolutePath());
-		
 		Controller controller = new Controller();
 		controller.run(sourceFile, targetFile);
 		
