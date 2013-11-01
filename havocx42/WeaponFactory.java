@@ -1,4 +1,5 @@
 package havocx42;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,101 +60,80 @@ public class WeaponFactory {
 	private void includeFile(Weapon weapon, File f, String[] args) {
 		LOGGER.finer("Including file: " + f.getName());
 		// System.out.println("Including File: " + f.getName());
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(f));
-		} catch (FileNotFoundException e1) {
-			LOGGER.fine("Unable to include file: " + e1.getMessage() + " for Weapon:" + weapon.name);
-			return;
-		}
-		Boolean executing = true;
-		Stack<IfState> ifStack = new Stack<IfState>();
-		while (true) {
-			String line;
-			try {
-				line = reader.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-				return;
-			}
-			if (line == null) {
-				break;
-			}
+		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
 
-			if (line.trim().startsWith("if ")) {
-				if (executing) {
+			Boolean executing = true;
+			Stack<IfState> ifStack = new Stack<IfState>();
+			while (true) {
+				String line;
+				line = reader.readLine();
+				if (line == null) {
+					break;
+				}
+
+				if (line.trim().startsWith("if ")) {
+					if (executing) {
+						int arg = Integer.valueOf(line.substring(line.indexOf("v_arg") + 5, line.indexOf("v_arg") + 6));
+						Boolean condition = (args[arg - 1].equals(line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""))));
+						ifStack.push(new IfState(executing, condition));
+						executing = ifStack.peek().condition && ifStack.peek().executing;
+					} else {
+						ifStack.push(new IfState(executing, null));
+					}
+				} else if (line.contains("elseIf ")) {
 					int arg = Integer.valueOf(line.substring(line.indexOf("v_arg") + 5, line.indexOf("v_arg") + 6));
 					Boolean condition = (args[arg - 1].equals(line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""))));
-					ifStack.push(new IfState(executing, condition));
-					executing = ifStack.peek().condition && ifStack.peek().executing;
-				} else {
-					ifStack.push(new IfState(executing, null));
+					executing = condition && !ifStack.peek().condition && ifStack.peek().executing;
+					if (condition) {
+						ifStack.peek().condition = true;
+					}
+				} else if (line.trim().equals("endIf")) {
+					executing = ifStack.pop().executing;
+				} else if (line.trim().equals("else")) {
+					executing = !ifStack.peek().condition && ifStack.peek().executing;
 				}
-			} else if (line.contains("elseIf ")) {
-				int arg = Integer.valueOf(line.substring(line.indexOf("v_arg") + 5, line.indexOf("v_arg") + 6));
-				Boolean condition = (args[arg - 1].equals(line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""))));
-				executing = condition && !ifStack.peek().condition && ifStack.peek().executing;
-				if (condition) {
-					ifStack.peek().condition = true;
-				}
-			} else if (line.trim().equals("endIf")) {
-				executing = ifStack.pop().executing;
-			} else if (line.trim().equals("else")) {
-				executing = !ifStack.peek().condition && ifStack.peek().executing;
-			}
-			if (executing) {
-				if (line.trim().startsWith("include")) {
-					for (int i = 1; i < 10; i++) {
-						if (line.contains("v_arg" + i)) {
-							line = line.replace("v_arg" + i, "\"" + safeArrayAccess(args, i - 1) + "\"");
+				if (executing) {
+					if (line.trim().startsWith("include")) {
+						for (int i = 1; i < 10; i++) {
+							if (line.contains("v_arg" + i)) {
+								line = line.replace("v_arg" + i, "\"" + safeArrayAccess(args, i - 1) + "\"");
+							}
 						}
-					}
-					// System.out.println("Include line: " + line);
-					int startingIndex = line.indexOf("include") + "include".length();
-					int endingIndex = line.indexOf("\"");
-					endingIndex = endingIndex < 0 ? line.length() : endingIndex;
-					String fileName = line.substring(startingIndex, endingIndex).trim();
+						// System.out.println("Include line: " + line);
+						int startingIndex = line.indexOf("include") + "include".length();
+						int endingIndex = line.indexOf("\"");
+						endingIndex = endingIndex < 0 ? line.length() : endingIndex;
+						String fileName = line.substring(startingIndex, endingIndex).trim();
 
-					ArrayList<String> newArgs = new ArrayList<String>();
-					String arguments = line.substring(endingIndex).trim();
-					StringTokenizer st = new StringTokenizer(arguments);
-					while (st.hasMoreTokens()) {
-						newArgs.add(st.nextToken().replace("\"", ""));
-					}
+						ArrayList<String> newArgs = new ArrayList<String>();
+						String arguments = line.substring(endingIndex).trim();
+						StringTokenizer st = new StringTokenizer(arguments);
+						while (st.hasMoreTokens()) {
+							newArgs.add(st.nextToken().replace("\"", ""));
+						}
 
-					/*
-					 * 
-					 * Boolean inside = false; StringBuilder currentArg = new
-					 * StringBuilder(); for (int i = line.indexOf(" "); i <
-					 * line.length(); i++) { if (line.charAt(i) == (' ')) { if
-					 * (inside) { newArgs.add(currentArg.toString()); }
-					 * currentArg = new StringBuilder(); inside = !inside; }
-					 * else { if (line.charAt(i) != '\"')
-					 * currentArg.append(line.charAt(i)); } }
-					 */
-					String[] newArgsArray = new String[newArgs.size()];
-					File includeFile = new File(f.getParentFile(), fileName);
-					includeFile(weapon, includeFile, newArgs.toArray(newArgsArray));
-				} else {
-					populateWeaponFromLine(weapon, line);
+						/*
+						 * 
+						 * Boolean inside = false; StringBuilder currentArg =
+						 * new StringBuilder(); for (int i = line.indexOf(" ");
+						 * i < line.length(); i++) { if (line.charAt(i) ==
+						 * (' ')) { if (inside) {
+						 * newArgs.add(currentArg.toString()); } currentArg =
+						 * new StringBuilder(); inside = !inside; } else { if
+						 * (line.charAt(i) != '\"')
+						 * currentArg.append(line.charAt(i)); } }
+						 */
+						String[] newArgsArray = new String[newArgs.size()];
+						File includeFile = new File(f.getParentFile(), fileName);
+						includeFile(weapon, includeFile, newArgs.toArray(newArgsArray));
+					} else {
+						populateWeaponFromLine(weapon, line);
+					}
 				}
 			}
-		}
-		if (reader != null) {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} catch (IOException e1) {
+			LOGGER.fine("Unable to include file: " + e1.getMessage() + " for Weapon:" + weapon.name);
+			return;
 		}
 	}
 
@@ -175,9 +155,10 @@ public class WeaponFactory {
 
 			} else if (line.contains(recoilForceUp)) {
 				weapon.recoilForceUp = line.substring(line.lastIndexOf(recoilForceUp) + recoilForceUp.length(), line.length());
-				
+
 			} else if (line.contains(recoilForceLeftRight)) {
-				weapon.recoilForceLeftRight = line.substring(line.lastIndexOf(recoilForceLeftRight) + recoilForceLeftRight.length(), line.length());
+				weapon.recoilForceLeftRight = line.substring(line.lastIndexOf(recoilForceLeftRight) + recoilForceLeftRight.length(),
+						line.length());
 
 			} else if (line.contains(velocity)) {
 				weapon.velocity = Double.valueOf(line.substring(line.lastIndexOf(velocity) + velocity.length(), line.length()));
