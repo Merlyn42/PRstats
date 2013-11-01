@@ -9,8 +9,10 @@ Source directory should be a directory containing the objects_weapons_server zip
 Target is the excel file to write to.
 
 
-Required libraries to build:
+Required libraries to build
 =======
 Apache POI (developed with 3.8)
 Apache Commons IO (developed with 2.4)
 Apache Commons CLI (developed with 1.2)
+
+Thanks to The Apache Software Foundation for these libraries. Their license can be found in LICENSE-2.0.txt
