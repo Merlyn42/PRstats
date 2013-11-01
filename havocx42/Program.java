@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU General Public License
     along with PRStats.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package havocx42;
 
 import java.awt.EventQueue;
@@ -25,6 +25,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -65,7 +68,11 @@ public class Program {
 			e1.printStackTrace();
 			return;
 		}
-		// get location
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+			LOGGER.log(Level.WARNING,"Unable to set Look and Feel",e1);
+		}
 
 		Options options = new Options();
 		options.addOption("nogui", false, "run as a command line tool, must also supply -target and -source arguments");
@@ -93,8 +100,8 @@ public class Program {
 
 		source = cmd.getOptionValue("source");
 		target = cmd.getOptionValue("target");
-		LOGGER.info("Source Argument: "+source);
-		LOGGER.info("Target Argument: "+target);
+		LOGGER.info("Source Argument: " + source);
+		LOGGER.info("Target Argument: " + target);
 
 		if (!cmd.hasOption("nogui")) {
 			EventQueue.invokeLater(new Runnable() {
