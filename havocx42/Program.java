@@ -101,7 +101,7 @@ public class Program {
 				@SuppressWarnings("unused")
 				public void run() {
 					try {
-						Gui window = new Gui(target, target);
+						Gui window = new Gui(source, target);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
