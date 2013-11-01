@@ -37,23 +37,19 @@ public class Gui implements ActionListener {
 	private JFrame		frame;
 	private JTextField	txtTargetpath;
 	private JTextField	txtSourcepath;
-	private String		targetPath	= "";
-	private String		sourcePath	= "";
 
 	/**
 	 * Create the application.
 	 */
 	public Gui(String sourcePath_in, String targetPath_in) {
-		sourcePath = sourcePath_in;
-		targetPath = targetPath_in;
-		initialize();
+		initialize(sourcePath_in,targetPath_in);
 		frame.setVisible(true);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(String sourcePath_in, String targetPath_in) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 517, 122);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,7 +71,7 @@ public class Gui implements ActionListener {
 		targetPanel.add(lblNewLabel_1);
 
 		txtTargetpath = new JTextField();
-		txtTargetpath.setText(targetPath);
+		txtTargetpath.setText(targetPath_in);
 		targetPanel.add(txtTargetpath);
 		txtTargetpath.setColumns(28);
 
@@ -92,7 +88,7 @@ public class Gui implements ActionListener {
 		sourcePanel.add(lblNewLabel);
 
 		txtSourcepath = new JTextField();
-		txtSourcepath.setText(sourcePath);
+		txtSourcepath.setText(sourcePath_in);
 		sourcePanel.add(txtSourcepath);
 		txtSourcepath.setColumns(28);
 
@@ -109,8 +105,8 @@ public class Gui implements ActionListener {
 			final JFileChooser fc = new JFileChooser();
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			File sourceFile;
-			if (sourcePath != null) {
-				sourceFile = new File(sourcePath);
+			if (txtSourcepath.getText() != null) {
+				sourceFile = new File(txtSourcepath.getText());
 			} else {
 				sourceFile = new File("");
 			}
@@ -119,8 +115,7 @@ public class Gui implements ActionListener {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File f = fc.getSelectedFile();
 				if (f.exists()) {
-					sourcePath = f.getAbsolutePath();
-					txtSourcepath.setText(sourcePath);
+					txtSourcepath.setText(f.getAbsolutePath());
 				}
 			}
 		}
@@ -129,8 +124,8 @@ public class Gui implements ActionListener {
 		if ("target".equals(e.getActionCommand())) {
 			final JFileChooser fc = new JFileChooser();
 			File targetFile;
-			if (targetPath != null) {
-				targetFile = new File(targetPath);
+			if (txtTargetpath.getText() != null) {
+				targetFile = new File(txtTargetpath.getText());
 			} else {
 				targetFile = new File("");
 			}
@@ -142,19 +137,18 @@ public class Gui implements ActionListener {
 			int returnVal = fc.showOpenDialog(frame);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File f = fc.getSelectedFile();
-				targetPath = f.getAbsolutePath();
-				txtTargetpath.setText(targetPath);
+				txtTargetpath.setText(f.getAbsolutePath());
 
 			}
 		}
 		if ("run".equals(e.getActionCommand())) {
 			System.out.println("run");
-			File source = new File(sourcePath);
+			File source = new File(txtSourcepath.getText());
 			if (!source.exists() || !source.isDirectory()) {
 				System.err.println("Source invalid");
 				return;
 			}
-			File target = new File(targetPath);
+			File target = new File(txtTargetpath.getText());
 			try {
 				if (!target.canWrite() && !target.createNewFile()) {
 					System.err.println("Can't write to target");
