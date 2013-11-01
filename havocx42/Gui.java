@@ -51,7 +51,8 @@ public class Gui implements ActionListener {
 	 */
 	private void initialize(String sourcePath_in, String targetPath_in) {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 517, 122);
+		frame.setTitle("PRStats "+Program.VERSION);
+		frame.setBounds(100, 100, 517, 119);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
